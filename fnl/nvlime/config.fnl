@@ -77,7 +77,7 @@
                  :size ""}
    :floating_window {:border "single"
                      :scroll_step 3}
-   :cmp {:enabled false}
+   :cmp {:enabled false :snippets false}
    :arglist {:enabled true}})
 
 (vim.tbl_deep_extend "force"
