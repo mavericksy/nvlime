@@ -749,6 +749,13 @@ enable_cmp                                         *g:nvlime_config.cmp*
         Default: false
         Specifies whether to enable `nvim-cmp` autocompletion source.
 
+    snippets
+        `boolean`
+        Default: false
+        When true, functions, operators and methods are inserted as a
+        snippet wrapped in parentheses, e.g. `(name $0)`. Needs a snippet
+        engine configured in `nvim-cmp`.
+
 arglist                                        *g:nvlime_config.arglist*
     `dictionary`
 

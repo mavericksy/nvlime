@@ -42,7 +42,7 @@ if _2bfuzzy_3f_2b then
     local kind = (flags__3ekind(flags) or lsp_types.CompletionItemKind.Keyword)
     local label = psl.first(item)
     local base = {label = label, labelDetails = {detail = flags}, kind = kind}
-    if ((kind == lsp_types.CompletionItemKind.Function) or (kind == lsp_types.CompletionItemKind.Operator) or (kind == lsp_types.CompletionItemKind.Method)) then
+    if (opts.cmp.snippets and ((kind == lsp_types.CompletionItemKind.Function) or (kind == lsp_types.CompletionItemKind.Operator) or (kind == lsp_types.CompletionItemKind.Method))) then
       base["insertText"] = ("(" .. label .. " $0)")
       base["insertTextFormat"] = 2
     else
