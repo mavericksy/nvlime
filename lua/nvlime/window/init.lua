@@ -24,6 +24,9 @@ local nvim_clear_autocmds = _local_1_["nvim_clear_autocmds"]
 local nvim_exec = _local_1_["nvim_exec"]
 local nvim_open_win = _local_1_["nvim_open_win"]
 local window = {cursor = {}, center = {}}
+local function win_open_3f(winid)
+  return ((winid > 0) and vim.api.nvim_win_is_valid(winid))
+end
 local _2bscrollbar_bufname_2b = buffer["gen-name"]("scrollbar")
 local _2afocus_winid_2a = 1000
 local function filetype_win(filetypes)
@@ -237,7 +240,7 @@ local function add_scrollbar(wininfo, zindex)
   local pattern = tostring(wininfo.winid)
   local close_scrollbar
   local function _25_()
-    if pwin["visible?"](scrollbar_winid) then
+    if win_open_3f(scrollbar_winid) then
       return nvim_win_close(scrollbar_winid, true)
     else
       return nil
@@ -263,7 +266,7 @@ local function add_scrollbar(wininfo, zindex)
         return nvim_win_set_var(scrollbar_winid, "nvlime_scrollbar", true)
       end
       open_sb_window = _29_
-      if pwin["visible?"](scrollbar_winid) then
+      if win_open_3f(scrollbar_winid) then
         return update_sb_window()
       else
         return open_sb_window()
@@ -282,7 +285,7 @@ local function add_scrollbar(wininfo, zindex)
   end
   nvim_create_autocmd("WinClosed", {pattern = pattern, nested = true, callback = _32_})
   local function _33_()
-    if pwin["visible?"](wininfo.winid) then
+    if win_open_3f(wininfo.winid) then
       return callback()
     else
       return nil
@@ -290,7 +293,11 @@ local function add_scrollbar(wininfo, zindex)
   end
   nvim_create_autocmd("WinScrolled", {pattern = tostring(_2afocus_winid_2a), callback = _33_, once = true})
   local function _35_()
-    return callback()
+    if win_open_3f(wininfo.winid) then
+      return callback()
+    else
+      return nil
+    end
   end
   vim.defer_fn(_35_, 5)
   return scrollbar_winid
@@ -330,7 +337,7 @@ window["open-float"] = function(bufnr, opts, close_on_leave_3f, focus_3f, callba
   return winid
 end
 window["close-float"] = function(winid)
-  if (pwin["visible?"](winid) and pwin["floating?"](winid)) then
+  if (win_open_3f(winid) and pwin["floating?"](winid)) then
     return nvim_win_close(winid, true)
   else
     return nil
