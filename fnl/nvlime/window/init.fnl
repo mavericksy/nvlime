@@ -31,6 +31,12 @@
 
 (local window {:cursor {} :center {}})
 
+;;; WinID -> bool
+(fn win-open? [winid]
+  "Returns true if a window with `winid` exists. Unlike `pwin.visible?`,
+it also works for floating windows, because `win_id2win()` returns 0 for them."
+  (and (> winid 0) (vim.api.nvim_win_is_valid winid)))
+
 (local +scrollbar-bufname+ (buffer.gen-name "scrollbar"))
 (var *focus-winid* 1000)
 
@@ -267,7 +273,7 @@ Returns winid of the created scrollbar window."
   (var scrollbar-winid -1)
   (let [scrollbar-bufnr (create-scrollbar-buffer "▌")
         pattern (tostring wininfo.winid)
-        close-scrollbar #(when (pwin.visible? scrollbar-winid)
+        close-scrollbar #(when (win-open? scrollbar-winid)
                            (nvim_win_close scrollbar-winid true))
         callback
         #(let [info (pwin.get-info wininfo.winid)
@@ -305,7 +311,7 @@ Returns winid of the created scrollbar window."
                                       ;; consider scrollbar windows as floating windows
                                       (nvim_win_set_var
                                         scrollbar-winid "nvlime_scrollbar" true))]
-                 (if (pwin.visible? scrollbar-winid)
+                 (if (win-open? scrollbar-winid)
                      (update-sb-window)
                      (open-sb-window)))
                (close-scrollbar)))]
@@ -333,14 +339,14 @@ Returns winid of the created scrollbar window."
     ;; fix hiding scrollbar for `<C-w>H/L/K/J` keymaps
     (nvim_create_autocmd "WinScrolled"
       {:pattern (tostring *focus-winid*)
-       :callback #(when (pwin.visible? wininfo.winid)
+       :callback #(when (win-open? wininfo.winid)
                     (callback))
        :once true})
     ;; defer required to fix wrong initial placement of the scrollbar
     ;; (my assumption it is because of `:relative "win"`)
     ;; timeout doesn't really matter that much 5 chosen just to add
     ;; a little time before showing it
-    (vim.defer_fn #(callback) 5)
+    (vim.defer_fn #(when (win-open? wininfo.winid) (callback)) 5)
     scrollbar-winid))
 
 ;;; ========== FLOAT WINDOW ==========
@@ -377,7 +383,7 @@ window's id and buffer number of the attached buffer to it."
 ;;; WinID ->
 (fn window.close-float [winid]
   "Closes the window with `winid` if it opened and it is a floating window."
-  (when (and (pwin.visible? winid)
+  (when (and (win-open? winid)
              (pwin.floating? winid))
     (nvim_win_close winid true)))
 

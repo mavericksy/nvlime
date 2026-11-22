@@ -83,10 +83,14 @@
   "\\k\\+")
 
 (fn source.complete [self params callback]
+  ;; Results depend on the whole input, e.g. "ql:qui" is not a refinement
+  ;; of the items returned for "q". Mark them incomplete so nvim-cmp asks
+  ;; again on every keystroke instead of only filtering the first result.
   (let [on-done (fn [candidates]
                   (callback
-                    (icollect [_ c (ipairs (or candidates []))]
-                      (get-lsp-kind c))))
+                    {:items (icollect [_ c (ipairs (or candidates []))]
+                              (get-lsp-kind c))
+                     :isIncomplete true}))
         input (string.sub params.context.cursor_before_line
                           params.offset)]
     (get-completion input on-done)))

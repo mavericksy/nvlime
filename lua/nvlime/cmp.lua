@@ -90,7 +90,7 @@ source.complete = function(self, params, callback)
       end
       return tbl_21_
     end
-    return callback(_12_())
+    return callback({items = _12_(), isIncomplete = true})
   end
   on_done = _11_
   local input = string.sub(params.context.cursor_before_line, params.offset)
