@@ -38,7 +38,15 @@ end
 local get_lsp_kind
 if _2bfuzzy_3f_2b then
   local function _5_(item)
-    local flags = item[4]
+    local flags
+    do
+      local f = item[4]
+      if (type(f) == "string") then
+        flags = f
+      else
+        flags = ""
+      end
+    end
     local kind = (flags__3ekind(flags) or lsp_types.CompletionItemKind.Keyword)
     local label = psl.first(item)
     local base = {label = label, labelDetails = {detail = flags}, kind = kind}
