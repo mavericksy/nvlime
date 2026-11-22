@@ -50,7 +50,10 @@
 (local get-lsp-kind
        (if +fuzzy?+
            (fn [item]
-             (let [flags (. item 4)
+             ;; Swank may send something other than a flags string, e.g. an
+             ;; empty list for package-qualified input like "ql:qui".
+             (let [flags (let [f (. item 4)]
+                           (if (= (type f) "string") f ""))
                    kind (or (flags->kind flags)
                             lsp-types.CompletionItemKind.Keyword)
                    label (psl.first item)
